@@ -1,8 +1,46 @@
-===================================
+======================================================================
 task 1
 
 explanation: reading and writing is not done in the right order.
 they are critical sections, so should be atomic.
 
-bugs: 
+bugs: account.withdraw(10); and account.debosit(10); should be 
+performed atomically.
+
+======================================================================
+task 2
+
+the starting order is determined by the loop in the main (AccountManager.java)
+		for(int i=0; i<10; i++){
+			deposit[i].start();
+			withdraw[i].start();
+		}
+a deposit thread is started and its corresponding withdraw thread is 
+started immediately after.
+
+if each thread had the chance to run uninterrupted in the CPU, then the data 
+would not be corrupted--and about half the time in sample runs, it 
+is not. But some deposit threads are interrupted occasionally, and this results 
+in the withdrawing thread completing before its corresponding deposit thread--and 
+then data is corrupted.
+
+In theory setting each corresponding deposit and withdraw thread as distant
+as possible in execution would diminish the risk of getting corrupted data.
+This is because the deposit would have more chances to complete before the
+withdraw thread is completed.
+
+test: loop is modified: 
+
+
+
+
+
+
+
+
+
+
+
+
+
 
