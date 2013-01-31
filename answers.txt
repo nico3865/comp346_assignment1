@@ -1,0 +1,8 @@
+===================================
+task 1
+
+explanation: reading and writing is not done in the right order.
+they are critical sections, so should be atomic.
+
+bugs: 
+
