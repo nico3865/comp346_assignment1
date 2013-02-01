@@ -18,20 +18,43 @@ the starting order is determined by the loop in the main (AccountManager.java)
 a deposit thread is started and its corresponding withdraw thread is 
 started immediately after.
 
-if each thread had the chance to run uninterrupted in the CPU, then the data 
-would not be corrupted--and about half the time in sample runs, it 
-is not. But some deposit threads are interrupted occasionally, and this results 
-in the withdrawing thread completing before its corresponding deposit thread--and 
-then data is corrupted.
+if each thread has the chance to run uninterrupted in the CPU, then the data 
+would not be corrupted (and about half the time, in sample runs, it 
+is not). But some deposit threads are interrupted occasionally, and this results 
+in the withdrawing thread being triggered before its corresponding deposit 
+thread completes... then, in those few cases, data is corrupted.
 
 In theory setting each corresponding deposit and withdraw thread as distant
 as possible in execution would diminish the risk of getting corrupted data.
 This is because the deposit would have more chances to complete before the
 withdraw thread is completed.
 
-test: loop is modified: 
+test: the loop is modified with 2 loops instead:
+		for(int i=0; i<10; i++){
+			deposit[i].start();
+		}
+		for(int i=0; i<10; i++){
+			withdraw[i].start();
+		}
+sample runs show that account data is still occasionally corrupted, although
+it seems to be slightly less often than with the previous loop (statistics 
+over a large number of samples would be required to have a good estimate
+of the effect of this second loop).
 
+...the difference, if it exists, is not very significant, though. it seems that, 
+in practice a deposit process has almost as much risk to be interrupted 
+by its corresponding process, even if there are 9 other processes that
+separate them in the call order.
 
+======================================================================
+task 3
+
+in the task 3 package I synchronized the methods:
+	public void debosit(double amount){...}
+	public void withdraw(double amount){...}
+the result is:
+	public synchronized void debosit(double amount){...}
+	public synchronized void withdraw(double amount){...}
 
 
 
