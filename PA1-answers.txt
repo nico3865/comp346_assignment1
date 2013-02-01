@@ -19,11 +19,17 @@ the starting order is determined by the loop in the main (AccountManager.java)
 a deposit thread is started and its corresponding withdraw thread is 
 started immediately after.
 
+Lifecycle: after being started, a thread is not necessarily used by the CPU
+immediately. It is in runnable state and is stored in a queue. when it is finally
+ran it can be interrupted and put in the blocked queue. then it is ran again 
+(and ca be stopped again), until it finishes (is "dead").
+
 if each thread has the chance to run uninterrupted in the CPU, then the data 
 would not be corrupted (and about half the time, in sample runs, it 
-is not). But some deposit threads are interrupted occasionally, and this results 
-in the withdrawing thread being triggered before its corresponding deposit 
-thread completes... then, in those few cases, data is corrupted.
+is not). But some deposit threads are interrupted occasionally, and sometimes 
+the withdrawing thread is triggered (and modifes account data) before its 
+corresponding deposit thread completes... then, in those few cases, data is 
+corrupted.
 
 In theory setting each corresponding deposit and withdraw thread as distant
 as possible in execution would diminish the risk of getting corrupted data.
