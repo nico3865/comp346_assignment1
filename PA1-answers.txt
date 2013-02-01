@@ -1,14 +1,15 @@
-======================================================================
-task 1
+===================================================================================
+task 1: Atomicity violation
 
 explanation: reading and writing is not done in the right order.
 they are critical sections, so should be atomic.
 
 bugs: account.withdraw(10); and account.debosit(10); should be 
-performed atomically.
+performed atomically in the depositor and withdrawer classes, or better: 
+in the Account class.
 
-======================================================================
-task 2
+===================================================================================
+task 2: Starting Order
 
 the starting order is determined by the loop in the main (AccountManager.java)
 		for(int i=0; i<10; i++){
@@ -46,8 +47,8 @@ in practice a deposit process has almost as much risk to be interrupted
 by its corresponding process, even if there are 9 other processes that
 separate them in the call order.
 
-======================================================================
-task 3
+===================================================================================
+task 3: Method level synchronization 
 
 in the task 3 package I synchronized the methods:
 	public void debosit(double amount){...}
@@ -55,13 +56,41 @@ in the task 3 package I synchronized the methods:
 the result is:
 	public synchronized void debosit(double amount){...}
 	public synchronized void withdraw(double amount){...}
+...account data are never corrupted anymore in sample runs.
 
 
+===================================================================================
+task 4: Block level synchronization (Synchronized statements)
+
+added a lock object:
+	private final Object LOCK = new Object(); // not static, but specific to 
+					//each instance, each account object. 
+
+embedded methods' critical sections in a synchronized(this.LOCK){...} block:
+		synchronized (this.LOCK) {
+			balance = balance + amount;
+		}
 
 
+===================================================================================
+task 5
 
+block synchronization is more flexible than method synchronization:
 
+- block level allows to exclude some of the code in the method that does not need
+to be atomic. here the code 
+		double k = 999999999;
+		for (int i = 0; i < 100; i++)
+			k = k / 2;
+can be safely excluded from the synchronized, critical section.
 
+- block level allows to choos what object acts as lock. this allows for example
+to share a lock among all instances of a class, by making it static. This is
+however not needed in this specific assignment but could come in handy.
+
+on the other hand method synchronization is perhaps clearer because it tags the 
+method as critical/ atomic--easier to read for other programmers, thus better
+for maintainability.
 
 
 
